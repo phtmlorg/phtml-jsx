@@ -25,6 +25,25 @@
 <html lang="en" dir="ltr"><head><title>pHTML JSX</title></head><body><p class="foo">Hello, World!</p></body></html>
 ```
 
+Alternatively, a `jsx` attribute can toggle an existing element.
+
+```jsx
+<!doctype html>
+<html jsx lang="en" dir={"ltr"}>
+  <head>
+    <title>pHTML JSX</title>
+  </head>
+  <body>
+    <p class={'foo'}>Hello, {'World'}!</p>
+  </body>
+</html>
+
+<!-- becomes -->
+
+<!doctype html>
+<html lang="en" dir="ltr"><head><title>pHTML JSX</title></head><body><p class="foo">Hello, World!</p></body></html>
+```
+
 ## Usage
 
 Add [pHTML JSX] to your project:
@@ -59,7 +78,10 @@ phtml([
 
 ## Options
 
-...
+### data
+
+The `data` option defines an object whose properties will be accessible as
+global variables within JSX fragments.
 
 [cli-img]: https://img.shields.io/travis/phtmlorg/phtml-jsx.svg
 [cli-url]: https://travis-ci.org/phtmlorg/phtml-jsx

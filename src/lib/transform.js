@@ -8,7 +8,7 @@ const defaultOpts = {
 };
 
 export default function transform(source, options) {
-	const body = `!function(){"use strict";return<>${source}</>}`;
+	const body = `!function(){"use strict";return (${source})}`;
 	const opts = Object.assign({}, defaultOpts, options);
 	const transformOpts = Object.assign({}, opts.transformOpts, {
 		plugins: [

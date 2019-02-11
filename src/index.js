@@ -6,18 +6,28 @@ export default new phtml.Plugin('phtml-jsx', opts => {
 
 	return root => {
 		root.walk(node => {
-			const isNodeJSX = node.type === 'element' && node.name === '';
+			if (node.type !== 'element') {
+				return;
+			}
 
-			if (isNodeJSX) {
+			if (node.name === '') {
 				const hasData = node.nodes && node.nodes.length;
 
 				if (hasData) {
-					const result = exec(node.sourceInnerHTML, { data });
+					const results = exec(node.sourceOuterHTML, { data }).nodes;
 
-					node.replaceWith(result);
+					node.replaceWith(...results);
 				} else {
 					node.remove();
 				}
+			}
+
+			if (node.attrs.contains('jsx')) {
+				const result = exec(`<>${node.sourceOuterHTML}</>`, { data }).first;
+
+				result.attrs.remove('jsx');
+
+				node.replaceWith(result);
 			}
 		});
 	};
