@@ -4,12 +4,8 @@ import exec from './lib/exec';
 export default new phtml.Plugin('phtml-jsx', opts => {
 	const data = Object(Object(opts).data);
 
-	return root => {
-		root.walk(node => {
-			if (node.type !== 'element') {
-				return;
-			}
-
+	return {
+		Element(node) {
 			if (node.name === '') {
 				const hasData = node.nodes && node.nodes.length;
 
@@ -29,6 +25,6 @@ export default new phtml.Plugin('phtml-jsx', opts => {
 
 				node.replaceWith(result);
 			}
-		});
+		}
 	};
 });

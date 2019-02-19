@@ -13,11 +13,7 @@ export function __pragma(name, props, ...children) {
 
 	const attrs = __props(props);
 
-	const $element = new Element({ name, attrs });
-
-	$element.append(...nodes);
-
-	return $element;
+	return new Element({ name, attrs, nodes });
 }
 
 export function __pragmaFrag() {}
