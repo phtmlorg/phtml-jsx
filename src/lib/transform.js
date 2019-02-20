@@ -1,28 +1,34 @@
 import babel from '@babel/core';
 import babelPluginProposalObjectRestSpread from '@babel/plugin-proposal-object-rest-spread';
 import babelPluginTransformReactJSX from '@babel/plugin-transform-react-jsx';
+import babelPluginTransformReactJSXSource from '@babel/plugin-transform-react-jsx-source';
 
-const defaultOpts = {
+const pragmaOpts = {
 	pragma: '__pragma',
 	pragmaFrag: '__pragmaFrag'
 };
 
-export default function transform(source, options) {
+export default function transform(source, opts) {
 	const body = `!function(){"use strict";return (${source})}`;
-	const opts = Object.assign({}, defaultOpts, options);
-	const transformOpts = Object.assign({}, opts.transformOpts, {
+	const transformOptions = Object.assign({}, opts.transformOptions, {
 		plugins: [
-			...Array.from(opts.firstPlugins || []),
+			...opts.beforePlugins,
 			[babelPluginProposalObjectRestSpread],
 			[babelPluginTransformReactJSX, {
-				pragma: opts.pragma,
-				pragmaFrag: opts.pragmaFrag,
+				pragma: pragmaOpts.pragma,
+				pragmaFrag: pragmaOpts.pragmaFrag,
 				throwIfNamespace: false,
 				useBuiltIns: true
 			}],
-			...Array.from(opts.plugins || [])
-		]
+			[babelPluginTransformReactJSXSource],
+			...opts.plugins
+		],
+		filename: opts.source.input.from
 	});
 
-	return babel.transformSync(body, transformOpts).code.slice(14, -2);
+	return updateJSXSourceCode(babel.transformSync(body, transformOptions).code);
+}
+
+function updateJSXSourceCode(code) {
+	return code.replace(/^(var\s*_jsxFileName\s*=\s*"[^"]+";)\s*!function\s*\(\)\s*{\s*"use strict";\s*|\s*\};\s*$/g, '$1');
 }
