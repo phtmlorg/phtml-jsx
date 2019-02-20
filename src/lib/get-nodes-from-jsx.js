@@ -1,15 +1,9 @@
 import transform from './transform';
 import { __pragma, __pragmaFrag } from './pragma';
 
-export default (source, options) => {
-	// options
-	const defaultOpts = {};
-	const opts = Object.assign({}, defaultOpts, options);
-
-	const defaultData = { __pragma, __pragmaFrag };
-
+export default (source, opts) => {
 	// global options
-	const fnData = Object.assign({}, defaultData, opts.data);
+	const fnData = Object.assign({ __pragma, __pragmaFrag }, opts.data);
 
 	// array of parameters for the ESLit function
 	const fnPrms = Object.keys(fnData);
@@ -18,7 +12,7 @@ export default (source, options) => {
 	const fnArgs = fnPrms.map(key => fnData[key]);
 
 	// function body from source
-	const body = transform(source);
+	const body = transform(source, opts);
 
 	// ESLit class bound to the array of parameters
 	const FnClass = Function.prototype.bind.call(Function, null, ...fnPrms);

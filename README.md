@@ -6,42 +6,56 @@
 
 [pHTML JSX] lets you use JSX in HTML.
 
-```jsx
+```html
 <!doctype html>
 <>
-  <html lang="en" dir={"ltr"}>
+  <html lang="en" dir={dir}>
     <head>
       <title>pHTML JSX</title>
     </head>
     <body>
-      <p class={'foo'}>Hello, {'World'}!</p>
+      <p class={pClass}>Hello, {name}!</p>
     </body>
   </html>
 </>
 
-<!-- becomes -->
+<!-- using { dir: "ltr", pClass: "foo", name: "World" } becomes -->
 
 <!doctype html>
-<html lang="en" dir="ltr"><head><title>pHTML JSX</title></head><body><p class="foo">Hello, World!</p></body></html>
-```
-
-Alternatively, a `jsx` attribute can toggle an existing element.
-
-```jsx
-<!doctype html>
-<html jsx lang="en" dir={"ltr"}>
+<html lang="en" dir="ltr">
   <head>
     <title>pHTML JSX</title>
   </head>
   <body>
-    <p class={'foo'}>Hello, {'World'}!</p>
+    <p class="foo">Hello, World!</p>
+  </body>
+</html>
+```
+
+Alternatively, a `jsx` attribute can toggle an existing element.
+
+```html
+<!doctype html>
+<html lang="en" dir={dir} jsx>
+  <head>
+    <title>pHTML JSX</title>
+  </head>
+  <body>
+    <p class={pClass}>Hello, {name}!</p>
   </body>
 </html>
 
 <!-- becomes -->
 
 <!doctype html>
-<html lang="en" dir="ltr"><head><title>pHTML JSX</title></head><body><p class="foo">Hello, World!</p></body></html>
+<html lang="en" dir="ltr">
+  <head>
+    <title>pHTML JSX</title>
+  </head>
+  <body>
+    <p class="foo">Hello, World!</p>
+  </body>
+</html>
 ```
 
 ## Usage
@@ -82,6 +96,25 @@ phtml([
 
 The `data` option defines an object whose properties will be accessible as
 global variables within JSX fragments.
+
+### transformOptions
+
+The `transformOptions` option defines the transform options provided to Babel.
+By default, these options include the plugins 
+[@babel/plugin-proposal-object-rest-spread](https://babeljs.io/docs/en/next/babel-plugin-proposal-object-rest-spread.html)
+[@babel/plugin-transform-react-jsx](https://babeljs.io/docs/en/next/babel-plugin-transform-react-jsx.html)
+and
+[@babel/plugin-transform-react-jsx-source](https://babeljs.io/docs/en/next/babel-plugin-transform-react-jsx-source.html).
+
+### plugins
+
+The `plugins` option defines Babel plugins that will run after JSX
+transformations.
+
+### beforePlugins
+
+The `plugins` option defines Babel plugins that will run before JSX
+transformations.
 
 [cli-img]: https://img.shields.io/travis/phtmlorg/phtml-jsx.svg
 [cli-url]: https://travis-ci.org/phtmlorg/phtml-jsx

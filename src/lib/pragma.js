@@ -13,7 +13,7 @@ export function __pragma(name, props, ...children) {
 
 	const attrs = __props(props);
 
-	return new Element({ name, attrs, nodes });
+	return new Element({ name, attrs, nodes, source: props.__source });
 }
 
 export function __pragmaFrag() {}
@@ -23,8 +23,9 @@ function __props(props) {
 
 	for (const prop in props) {
 		const isEvent = /^on/.test(prop);
+		const isSource = /^__source/.test(prop);
 
-		if (!isEvent) {
+		if (!isEvent && !isSource) {
 			attrs.push({ name: prop, value: props[prop] });
 		}
 	}
