@@ -60,6 +60,14 @@ Alternatively, a `jsx` attribute can toggle an existing element.
 
 ## Usage
 
+Transform HTML files directly from the command line:
+
+```bash
+npx phtml source.html output.html -p @phtml/jsx
+```
+
+### Node
+
 Add [pHTML JSX] to your project:
 
 ```bash
