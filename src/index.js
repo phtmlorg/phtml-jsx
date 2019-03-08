@@ -10,11 +10,14 @@ export default new phtml.Plugin('phtml-jsx', rawopts => {
 	}
 
 	return {
-		Element(node) {
+		beforeElement(node) {
 			if (node.name === '') {
 				const hasData = node.nodes && node.nodes.length;
 
 				if (hasData) {
+					// empty the element to prevent its descendants from being parsed
+					node.replaceAll();
+
 					const jsxOpts = Object.assign({}, opts, { source: node.source });
 					const jsxNodes = getNodesFromJSX(node.sourceOuterHTML, jsxOpts).nodes;
 					const offsets = getLineNumberOffsets(node);
@@ -28,6 +31,9 @@ export default new phtml.Plugin('phtml-jsx', rawopts => {
 			}
 
 			if (node.attrs.contains('jsx')) {
+				// empty the element to prevent its descendants from being parsed
+				node.replaceAll();
+
 				const jsxOpts = Object.assign({}, opts, { source: node.source });
 				const jsxNode = getNodesFromJSX(`<>${node.sourceOuterHTML}</>`, jsxOpts).first;
 				const offsets = getLineNumberOffsets(node);

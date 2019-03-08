@@ -30,5 +30,5 @@ export default function transform(source, opts) {
 }
 
 function updateJSXSourceCode(code) {
-	return code.replace(/^(var\s*_jsxFileName\s*=\s*"[^"]+";)\s*!function\s*\(\)\s*{\s*"use strict";\s*|\s*\};\s*$/g, '$1');
+	return code.replace(/^(var\s*_jsxFileName\s*=\s*"[^"]+";)?\s*!function\s*\(\)\s*{\s*"use strict";\s*|\s*\};\s*$/g, '$1');
 }

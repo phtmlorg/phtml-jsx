@@ -31,5 +31,18 @@ module.exports = {
 			}
 		},
 		expect: 'basic.expect.html'
+	},
+	'attr-subtree': {
+		message: 'supports { data } with jsx attribute in subtree usage',
+		options: {
+			data: {
+				dir: 'ltr',
+				className: 'foo',
+				place: 'World'
+			}
+		}
+	},
+	'types': {
+		message: 'supports different object types'
 	}
 };

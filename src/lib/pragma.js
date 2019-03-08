@@ -1,4 +1,4 @@
-import { Element, Fragment, Text } from 'phtml';
+import { Element, Fragment, Node, Text } from 'phtml';
 
 export function __pragma(name, props, ...children) {
 	const nodes = __children(children);
@@ -26,7 +26,7 @@ function __props(props) {
 		const isSource = /^__source/.test(prop);
 
 		if (!isEvent && !isSource) {
-			attrs.push({ name: prop, value: props[prop] });
+			attrs.push({ name: prop, value: String(props[prop]) });
 		}
 	}
 
@@ -34,9 +34,18 @@ function __props(props) {
 }
 
 function __children(children) {
-	return children.map(
-		child => typeof child === 'string'
-			? new Text({ data: child })
-		: child
+	return children.reduce(
+		(array, child) => {
+			if (Array.isArray(child)) {
+				array.push(...__children(child));
+			} else if (child instanceof Node) {
+				array.push(child);
+			} else {
+				array.push(new Text({ data: String(child) }))
+			}
+
+			return array;
+		},
+		[]
 	);
 }

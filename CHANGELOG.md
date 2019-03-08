@@ -1,5 +1,9 @@
 # Changes to pHTML JSX
 
+### 2.1.2 (March 8, 2019)
+
+- Fixed: Issue with different object types not rendering
+
 ### 2.1.1 (March 8, 2019)
 
 - Fixed: Dependency on @babel/core

@@ -15,13 +15,10 @@ export default (source, opts) => {
 	const body = transform(source, opts);
 
 	// ESLit class bound to the array of parameters
-	const FnClass = Function.prototype.bind.call(Function, null, ...fnPrms);
-
-	// ESLit function instance using the function body
-	const fnFunc = new FnClass(body);
+	const fnFunc = Function.prototype.bind.call(Function, null, ...fnPrms)(body);
 
 	// executed ESLit instance
-	const result = fnFunc(...fnArgs);
+	const result = fnFunc.apply(fnFunc, fnArgs);
 
 	return result;
 }
