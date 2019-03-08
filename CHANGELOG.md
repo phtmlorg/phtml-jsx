@@ -1,5 +1,10 @@
 # Changes to pHTML JSX
 
+### 2.1.1 (March 8, 2019)
+
+- Fixed: Dependency on @babel/core
+- Updated: `@babel/plugin-proposal-object-rest-spread` to 7.3.4 (patch)
+
 ### 2.1.0 (February 20, 2019)
 
 - Updated: Allow Babel overrides for transform options and plugins.
