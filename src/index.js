@@ -19,12 +19,19 @@ export default new phtml.Plugin('phtml-jsx', rawopts => {
 					node.replaceAll();
 
 					const jsxOpts = Object.assign({}, opts, { source: node.source });
-					const jsxNodes = getNodesFromJSX(node.sourceOuterHTML, jsxOpts).nodes;
+					const jsxNodes = getNodesFromJSX(node.sourceOuterHTML, jsxOpts).nodes.slice(0);
 					const offsets = getLineNumberOffsets(node);
 
 					updateSourceOffsets(jsxNodes, offsets, node.source);
 
 					node.replaceWith(...jsxNodes);
+
+					return jsxNodes.reduce(
+						(childPromise, childNode) => childPromise.then(
+							() => childNode.observe()
+						),
+						Promise.resolve()
+					);
 				} else {
 					node.remove();
 				}
@@ -43,6 +50,8 @@ export default new phtml.Plugin('phtml-jsx', rawopts => {
 				jsxNode.attrs.remove('jsx');
 
 				node.replaceWith(jsxNode);
+
+				return jsxNode.observe();
 			}
 		}
 	};

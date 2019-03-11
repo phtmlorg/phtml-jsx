@@ -1,5 +1,9 @@
 # Changes to pHTML JSX
 
+### 2.1.3 (March 11, 2019)
+
+- Fixed: An issue with re-applying observers
+
 ### 2.1.2 (March 8, 2019)
 
 - Fixed: Issue with different object types not rendering
