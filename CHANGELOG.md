@@ -1,5 +1,9 @@
 # Changes to pHTML JSX
 
+### 3.0.0 (March 16, 2019)
+
+- Updated: `phtml` to 3.0.0 (major)
+
 ### 2.1.3 (March 11, 2019)
 
 - Fixed: An issue with re-applying observers

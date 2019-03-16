@@ -1,19 +1,17 @@
 import { Element, Fragment, Node, Text } from 'phtml';
 
 export function __pragma(name, props, ...children) {
-	const nodes = __children(children);
+	const options = 'root' in Object(this) ? { result: this } : {};
+
+	options.nodes = __children.bind(this)(children);
 
 	if (name === __pragmaFrag) {
-		const $fragment = new Fragment();
-
-		$fragment.append(...nodes);
-
-		return $fragment;
+		return new Fragment(options);
 	}
 
 	const attrs = __props(props);
 
-	return new Element({ name, attrs, nodes, source: props.__source });
+	return new Element({ ...options, name, attrs, source: props.__source });
 }
 
 export function __pragmaFrag() {}
@@ -34,14 +32,16 @@ function __props(props) {
 }
 
 function __children(children) {
+	const options = 'root' in Object(this) ? { result: this } : {};
+
 	return children.reduce(
 		(array, child) => {
 			if (Array.isArray(child)) {
-				array.push(...__children(child));
+				array.push(...__children.bind(this)(child));
 			} else if (child instanceof Node) {
 				array.push(child);
 			} else {
-				array.push(new Text({ data: String(child) }))
+				array.push(new Text({ ...options, data: String(child) }))
 			}
 
 			return array;

@@ -10,8 +10,9 @@ export default new phtml.Plugin('phtml-jsx', rawopts => {
 	}
 
 	return {
-		beforeElement(node) {
+		Element (node, result) {
 			if (node.name === '') {
+				const { constructor: NodeList } = node.nodes;
 				const hasData = node.nodes && node.nodes.length;
 
 				if (hasData) {
@@ -19,16 +20,15 @@ export default new phtml.Plugin('phtml-jsx', rawopts => {
 					node.replaceAll();
 
 					const jsxOpts = Object.assign({}, opts, { source: node.source });
-					const jsxNodes = getNodesFromJSX(node.sourceOuterHTML, jsxOpts).nodes.slice(0);
-					const offsets = getLineNumberOffsets(node);
+					const jsxNodes = NodeList.from(getNodesFromJSX(node.sourceOuterHTML, jsxOpts, result).nodes).slice(0);
 
-					updateSourceOffsets(jsxNodes, offsets, node.source);
+					updateSourceOffsets(jsxNodes, node);
 
 					node.replaceWith(...jsxNodes);
 
 					return jsxNodes.reduce(
 						(childPromise, childNode) => childPromise.then(
-							() => childNode.observe()
+							() => childNode.visit(result)
 						),
 						Promise.resolve()
 					);
@@ -38,50 +38,61 @@ export default new phtml.Plugin('phtml-jsx', rawopts => {
 			}
 
 			if (node.attrs.contains('jsx')) {
+				const { constructor: NodeList } = node.nodes;
+
 				// empty the element to prevent its descendants from being parsed
 				node.replaceAll();
 
 				const jsxOpts = Object.assign({}, opts, { source: node.source });
-				const jsxNode = getNodesFromJSX(`<>${node.sourceOuterHTML}</>`, jsxOpts).first;
-				const offsets = getLineNumberOffsets(node);
+				const jsxNode = NodeList.from(getNodesFromJSX(`<>${node.sourceOuterHTML}</>`, jsxOpts, result).nodes)[0];
 
-				updateSourceOffsets([jsxNode], offsets, node.source);
+				updateSourceOffsets([jsxNode], node);
 
 				jsxNode.attrs.remove('jsx');
 
 				node.replaceWith(jsxNode);
 
-				return jsxNode.observe();
+				return jsxNode.visit(result);
 			}
 		}
 	};
 });
 
 function getLineNumberOffsets(node) {
-	const inputHTML = node.source.input.html.slice(node.source.startOffset, node.source.endOffset);
-	const lbre = /\n/g;
-	const offsets = [];
+	const lbre = /(?:\n|\r\n?)/g;
+	const offsets = [0];
 
-	while (lbre.exec(inputHTML)) {
+	while (lbre.exec(node.sourceOuterHTML)) {
 		offsets.push(lbre.lastIndex);
 	}
 
 	return offsets;
 }
 
-function updateSourceOffsets(jsxNodes, lineNumberOffsets, nodeSource) {
+function updateSourceOffsets(jsxNodes, nodeSource) {
+	const lineNumberOffsets = getLineNumberOffsets(nodeSource);
+
 	jsxNodes.forEach(jsxNode => {
-		const offset = lineNumberOffsets[jsxNode.source.lineNumber];
+		const sourceNode = 'lineNumber' in jsxNode.source ? jsxNode : jsxNode.parent;
 
-		jsxNode.source = Object.assign({}, nodeSource, {
-			startOffset: offset,
-			startInnerOffset: offset,
-			endInnerOffset: offset,
-			endOffset: offset
-		});
+		if ('lineNumber' in sourceNode.source) {
+			const lineNumber = sourceNode.source.lineNumber - 1;
+			const lines = nodeSource.sourceOuterHTML.split(/(?:\n|\r\n?)/);
+			const line = lines[lineNumber];
+			const columnOffset = line.match(/^\s*/)[0].length;
+			const startOffset = nodeSource.source.startOffset + lineNumberOffsets[lineNumber] + columnOffset;
 
-		if (jsxNode.nodes && jsxNode.nodes.length) {
-			updateSourceOffsets(jsxNode.nodes, lineNumberOffsets, nodeSource);
+			jsxNode.source = Object.assign({}, nodeSource.source, {
+				startOffset: startOffset,
+				startInnerOffset: startOffset,
+				endInnerOffset: startOffset,
+				endOffset: startOffset,
+				lineNumber: sourceNode.source.lineNumber
+			});
+
+			if (jsxNode.nodes && jsxNode.nodes.length) {
+				updateSourceOffsets(jsxNode.nodes, nodeSource);
+			}
 		}
 	});
 }

@@ -1,9 +1,9 @@
 import transform from './transform';
 import { __pragma, __pragmaFrag } from './pragma';
 
-export default (source, opts) => {
+export default function getNodesFromJSX (source, opts, result) {
 	// global options
-	const fnData = Object.assign({ __pragma, __pragmaFrag }, opts.data);
+	const fnData = Object.assign({ __pragma: __pragma.bind(result), __pragmaFrag }, opts.data);
 
 	// array of parameters for the ESLit function
 	const fnPrms = Object.keys(fnData);
@@ -18,7 +18,5 @@ export default (source, opts) => {
 	const fnFunc = Function.prototype.bind.call(Function, null, ...fnPrms)(body);
 
 	// executed ESLit instance
-	const result = fnFunc.apply(fnFunc, fnArgs);
-
-	return result;
+	return fnFunc.apply(fnFunc, fnArgs);
 }
